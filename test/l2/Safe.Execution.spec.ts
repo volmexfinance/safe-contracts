@@ -13,17 +13,7 @@ import { parseEther } from "@ethersproject/units";
 import { safeContractUnderTest } from "../utils/config";
 
 describe("SafeL2", async () => {
-    const [user1, user2] = await hre.ethers.getSigners();
-
     before(function () {
-        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
-        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
-        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
-        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
-        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
-        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
-        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
-
         if (safeContractUnderTest() != "SafeL2") {
             this.skip();
         }
@@ -32,15 +22,18 @@ describe("SafeL2", async () => {
     const setupTests = deployments.createFixture(async ({ deployments }) => {
         await deployments.fixture();
         const mock = await getMock();
+        const [user1, user2] = await hre.ethers.getSigners();
         return {
             safe: await getSafeWithOwners([user1.address]),
             mock,
+            user1,
+            user2,
         };
     });
 
     describe("execTransactions", async () => {
         it("should emit SafeMultiSigTransaction event", async () => {
-            const { safe } = await setupTests();
+            const { safe, user1, user2 } = await setupTests();
             const tx = buildSafeTransaction({
                 to: user1.address,
                 nonce: await safe.nonce(),
@@ -76,7 +69,7 @@ describe("SafeL2", async () => {
         });
 
         it("should emit SafeModuleTransaction event", async () => {
-            const { safe, mock } = await setupTests();
+            const { safe, mock, user1, user2 } = await setupTests();
             const user2Safe = safe.connect(user2);
             await executeContractCallWithSigners(safe, safe, "enableModule", [user2.address], [user1]);
 
