@@ -28,7 +28,7 @@ const {
     PK,
     SOLIDITY_VERSION,
     SOLIDITY_SETTINGS,
-    COMPILATION_TARGET = "evm",
+    CONTRACTS_TARGET = "evm",
 } = process.env;
 
 const DEFAULT_MNEMONIC = "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat";
@@ -82,7 +82,7 @@ const getCompilerSettings = (): CompilerSettings => {
         },
     };
 
-    if (COMPILATION_TARGET === "zksync") {
+    if (CONTRACTS_TARGET === "zksync") {
         return {
             ...COMMON_SETTINGS,
             zksolc: {
@@ -108,7 +108,7 @@ const userConfig: HardhatUserConfig = {
             allowUnlimitedContractSize: true,
             blockGasLimit: 100000000,
             gas: 100000000,
-            zksync: COMPILATION_TARGET === "zksync",
+            // zksync: CONTRACTS_TARGET === "zksync",
         },
         polygon: {
             ...sharedNetworkConfig,

@@ -10,6 +10,6 @@ describe("Safe", async () => {
 
         // Chai doesn't have built-in matcher for deep object equality
         // For the sake of simplicity I decided just to convert the object to a string and compare the strings
-        expect(JSON.stringify(safeSingletonStorageLayout).startsWith(JSON.stringify(safeStorageLayout))).to.be.true;
+        expect(safeSingletonStorageLayout).to.deep.eq(safeStorageLayout);
     });
 });

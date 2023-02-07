@@ -16,6 +16,14 @@ describe("SafeL2", async () => {
     const [user1, user2] = await hre.ethers.getSigners();
 
     before(function () {
+        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
+        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
+        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
+        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
+        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
+        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
+        console.log("THE SAFE CONTRACT UNDER TEST IS: ", safeContractUnderTest());
+
         if (safeContractUnderTest() != "SafeL2") {
             this.skip();
         }
