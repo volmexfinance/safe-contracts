@@ -29,6 +29,7 @@ const {
     SOLIDITY_VERSION,
     SOLIDITY_SETTINGS,
     CONTRACTS_TARGET = "evm",
+    NODE_ENV,
 } = process.env;
 
 const DEFAULT_MNEMONIC = "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat";
@@ -96,6 +97,19 @@ const getCompilerSettings = (): CompilerSettings => {
     return COMMON_SETTINGS;
 };
 
+const zkSyncTestnet =
+    NODE_ENV == "test"
+        ? {
+              url: "http://localhost:3050",
+              ethNetwork: "http://localhost:8545",
+              zksync: true,
+          }
+        : {
+              url: "https://zksync2-testnet.zksync.dev",
+              ethNetwork: "goerli",
+              zksync: true,
+          };
+
 const userConfig: HardhatUserConfig = {
     paths: {
         artifacts: "build/artifacts",
@@ -108,38 +122,39 @@ const userConfig: HardhatUserConfig = {
             allowUnlimitedContractSize: true,
             blockGasLimit: 100000000,
             gas: 100000000,
-            // zksync: CONTRACTS_TARGET === "zksync",
+            zksync: false,
         },
         polygon: {
             ...sharedNetworkConfig,
             url: `https://polygon-mainnet.infura.io/v3/${INFURA_KEY}`,
+            zksync: false,
         },
         volta: {
             ...sharedNetworkConfig,
             url: `https://volta-rpc.energyweb.org`,
+            zksync: false,
         },
         bsc: {
             ...sharedNetworkConfig,
             url: `https://bsc-dataseed.binance.org/`,
+            zksync: false,
         },
         arbitrum: {
             ...sharedNetworkConfig,
             url: `https://arb1.arbitrum.io/rpc`,
+            zksync: false,
         },
         fantomTestnet: {
             ...sharedNetworkConfig,
             url: `https://rpc.testnet.fantom.network/`,
+            zksync: false,
         },
         avalanche: {
             ...sharedNetworkConfig,
             url: `https://api.avax.network/ext/bc/C/rpc`,
+            zksync: false,
         },
-        zkTestnet: {
-            url: "https://zksync2-testnet.zksync.dev",
-            // @ts-expect-error - this is zksync specific property which is not defined in the hardhat network type
-            ethNetwork: "goerli",
-            zksync: true,
-        },
+        zkSyncTestnet,
     },
     deterministicDeployment,
     namedAccounts: {
