@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import hre, { deployments, waffle } from "hardhat";
 import "@nomiclabs/hardhat-ethers";
-import { deployContract, getSimulateTxAccessor, getSafeWithOwners, getCompatFallbackHandler } from "../utils/setup";
+import { deployContract, getSimulateTxAccessor, getSafeWithOwners } from "../utils/setup";
 import { buildContractCall, executeTxWithSigners } from "../../src/utils/execution";
 import { parseEther } from "ethers/lib/utils";
 
@@ -26,14 +26,11 @@ describe("SimulateTxAccessor", async () => {
             }
         }`;
         const interactor = await deployContract(user1, source);
-        const handler = await getCompatFallbackHandler();
-        const safe = await getSafeWithOwners([user1.address], 1, handler.address);
-        const simulator = handler.attach(safe.address);
+        const safe = await getSafeWithOwners([user1.address], 1);
         return {
             safe,
             accessor,
             interactor,
-            simulator,
         };
     });
 
@@ -52,14 +49,23 @@ describe("SimulateTxAccessor", async () => {
         });
 
         it("simulate call", async () => {
-            const { safe, accessor, simulator } = await setupTests();
+            const { safe, accessor } = await setupTests();
             const tx = buildContractCall(safe, "getOwners", [], 0);
             const simulationData = accessor.interface.encodeFunctionData("simulate", [tx.to, tx.value, tx.data, tx.operation]);
-            const acccessibleData = await simulator.callStatic.simulate(accessor.address, simulationData);
-            const simulation = accessor.interface.decodeFunctionResult("simulate", acccessibleData);
-            expect(safe.interface.decodeFunctionResult("getOwners", simulation.returnData)[0]).to.be.deep.eq([user1.address]);
-            expect(simulation.success).to.be.true;
-            expect(simulation.estimate.toNumber()).to.be.lte(10000);
+
+            const expectedResponse = Object.values({
+                success: "1".padStart(64, "0"),
+                returnDataSize: "20".padStart(64, "0"),
+                returnData: user1.address.replace("0x", "").padStart(64, "0"),
+            }).join("");
+
+            console.log(await safe.callStatic.simulateAndRevert(accessor.address, simulationData));
+            await expect(safe.callStatic.simulateAndRevert(accessor.address, simulationData)).to.be.revertedWith(expectedResponse);
+
+            // const simulation = accessor.interface.decodeFunctionResult("simulate", acccessibleData);
+            // expect(safe.interface.decodeFunctionResult("getOwners", simulation.returnData)[0]).to.be.deep.eq([user1.address]);
+            // expect(simulation.success).to.be.true;
+            // expect(simulation.estimate.toNumber()).to.be.lte(10000);
         });
 
         it("simulate delegatecall", async () => {

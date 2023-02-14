@@ -2,6 +2,7 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "../base/Executor.sol";
+import "hardhat/console.sol";
 
 /// @title Simulate Transaction Accessor - can be used with StorageAccessible to simulate Safe transactions
 /// @author Richard Meissner - <richard@gnosis.pm>
@@ -22,7 +23,16 @@ contract SimulateTxAccessor is Executor {
         uint256 value,
         bytes calldata data,
         Enum.Operation operation
-    ) external onlyDelegateCall returns (uint256 estimate, bool success, bytes memory returnData) {
+    )
+        external
+        onlyDelegateCall
+        returns (
+            uint256 estimate,
+            bool success,
+            bytes memory returnData
+        )
+    {
+        console.log("hold on im simulating bratha");
         uint256 startGas = gasleft();
         success = execute(to, value, data, operation, gasleft());
         estimate = startGas - gasleft();
@@ -40,5 +50,8 @@ contract SimulateTxAccessor is Executor {
             // Point the return data to the correct memory location
             returnData := ptr
         }
+        console.log(estimate);
+        console.log(success);
+        console.logBytes(returnData);
     }
 }
