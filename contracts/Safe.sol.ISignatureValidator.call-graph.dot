@@ -1,0 +1,9 @@
+strict digraph {
+subgraph cluster_2274_ISignatureValidator {
+label = "ISignatureValidator"
+"2274_isValidSignature" [label="isValidSignature"]
+"2274_slitherConstructorConstantVariables" [label="slitherConstructorConstantVariables"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+}
+}

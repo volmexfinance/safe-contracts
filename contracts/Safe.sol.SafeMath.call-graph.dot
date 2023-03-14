@@ -1,0 +1,15 @@
+strict digraph {
+subgraph cluster_2255_SafeMath {
+label = "SafeMath"
+"2255_sub" [label="sub"]
+"2255_mul" [label="mul"]
+"2255_max" [label="max"]
+"2255_add" [label="add"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"require(bool)" 
+"2255_mul" -> "require(bool)"
+"2255_add" -> "require(bool)"
+"2255_sub" -> "require(bool)"
+}
+}

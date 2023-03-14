@@ -1,0 +1,17 @@
+strict digraph {
+subgraph cluster_1003_Guard {
+label = "Guard"
+"1003_checkTransaction" [label="checkTransaction"]
+"1003_checkAfterExecution" [label="checkAfterExecution"]
+}subgraph cluster_1029_BaseGuard {
+label = "BaseGuard"
+"1029_supportsInterface" [label="supportsInterface"]
+}subgraph cluster_2319_IERC165 {
+label = "IERC165"
+"2319_supportsInterface" [label="supportsInterface"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"type()" 
+"1029_supportsInterface" -> "type()"
+}
+}

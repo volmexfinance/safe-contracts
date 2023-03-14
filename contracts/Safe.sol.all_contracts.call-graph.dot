@@ -1,0 +1,220 @@
+strict digraph {
+subgraph cluster_2274_ISignatureValidator {
+label = "ISignatureValidator"
+"2274_isValidSignature" [label="isValidSignature"]
+}subgraph cluster_963_FallbackManager {
+label = "FallbackManager"
+"963_setFallbackHandler" [label="setFallbackHandler"]
+"963_internalSetFallbackHandler" [label="internalSetFallbackHandler"]
+"963_fallback" [label="fallback"]
+"963_setFallbackHandler" -> "963_internalSetFallbackHandler"
+"963_setFallbackHandler" -> "963_authorized"
+}subgraph cluster_1091_GuardManager {
+label = "GuardManager"
+"1091_getGuard" [label="getGuard"]
+"1091_setGuard" [label="setGuard"]
+"1091_setGuard" -> "1091_authorized"
+}subgraph cluster_2149_StorageAccessible {
+label = "StorageAccessible"
+"2149_getStorageAt" [label="getStorageAt"]
+"2149_simulateAndRevert" [label="simulateAndRevert"]
+}subgraph cluster_1029_BaseGuard {
+label = "BaseGuard"
+"1029_supportsInterface" [label="supportsInterface"]
+}subgraph cluster_1512_ModuleManager {
+label = "ModuleManager"
+"1512_enableModule" [label="enableModule"]
+"1512_execTransactionFromModule" [label="execTransactionFromModule"]
+"1512_execTransactionFromModuleReturnData" [label="execTransactionFromModuleReturnData"]
+"1512_isContract" [label="isContract"]
+"1512_disableModule" [label="disableModule"]
+"1512_getModulesPaginated" [label="getModulesPaginated"]
+"1512_isModuleEnabled" [label="isModuleEnabled"]
+"1512_setupModules" [label="setupModules"]
+"1512_enableModule" -> "1512_authorized"
+"1512_setupModules" -> "1512_execute"
+"1512_execTransactionFromModule" -> "1512_execute"
+"1512_getModulesPaginated" -> "1512_isModuleEnabled"
+"1512_execTransactionFromModuleReturnData" -> "1512_execTransactionFromModule"
+"1512_setupModules" -> "1512_isContract"
+"1512_disableModule" -> "1512_authorized"
+}subgraph cluster_2025_OwnerManager {
+label = "OwnerManager"
+"2025_removeOwner" [label="removeOwner"]
+"2025_changeThreshold" [label="changeThreshold"]
+"2025_getOwners" [label="getOwners"]
+"2025_addOwnerWithThreshold" [label="addOwnerWithThreshold"]
+"2025_setupOwners" [label="setupOwners"]
+"2025_isOwner" [label="isOwner"]
+"2025_getThreshold" [label="getThreshold"]
+"2025_swapOwner" [label="swapOwner"]
+"2025_addOwnerWithThreshold" -> "2025_changeThreshold"
+"2025_removeOwner" -> "2025_authorized"
+"2025_swapOwner" -> "2025_authorized"
+"2025_changeThreshold" -> "2025_authorized"
+"2025_addOwnerWithThreshold" -> "2025_authorized"
+"2025_removeOwner" -> "2025_changeThreshold"
+}subgraph cluster_1003_Guard {
+label = "Guard"
+"1003_checkTransaction" [label="checkTransaction"]
+"1003_checkAfterExecution" [label="checkAfterExecution"]
+}subgraph cluster_2094_SignatureDecoder {
+label = "SignatureDecoder"
+"2094_signatureSplit" [label="signatureSplit"]
+}subgraph cluster_911_Safe {
+label = "Safe"
+"911_getChainId" [label="getChainId"]
+"911_checkNSignatures" [label="checkNSignatures"]
+"911_checkSignatures" [label="checkSignatures"]
+"911_approveHash" [label="approveHash"]
+"911_constructor" [label="constructor"]
+"911_handlePayment" [label="handlePayment"]
+"911_execTransaction" [label="execTransaction"]
+"911_encodeTransactionData" [label="encodeTransactionData"]
+"911_setup" [label="setup"]
+"911_domainSeparator" [label="domainSeparator"]
+"911_getTransactionHash" [label="getTransactionHash"]
+"911_domainSeparator" -> "911_getChainId"
+"911_execTransaction" -> "911_checkSignatures"
+"911_checkNSignatures" -> "911_signatureSplit"
+"911_setup" -> "911_handlePayment"
+"911_execTransaction" -> "911_getGuard"
+"911_setup" -> "911_setupOwners"
+"911_execTransaction" -> "911_handlePayment"
+"911_checkSignatures" -> "911_checkNSignatures"
+"911_execTransaction" -> "911_execute"
+"911_handlePayment" -> "911_transferToken"
+"911_execTransaction" -> "911_encodeTransactionData"
+"911_encodeTransactionData" -> "911_domainSeparator"
+"911_setup" -> "911_internalSetFallbackHandler"
+"911_getTransactionHash" -> "911_encodeTransactionData"
+"911_setup" -> "911_setupModules"
+}subgraph cluster_2351_Executor {
+label = "Executor"
+"2351_execute" [label="execute"]
+}subgraph cluster_2319_IERC165 {
+label = "IERC165"
+"2319_supportsInterface" [label="supportsInterface"]
+}subgraph cluster_2255_SafeMath {
+label = "SafeMath"
+"2255_sub" [label="sub"]
+"2255_mul" [label="mul"]
+"2255_max" [label="max"]
+"2255_add" [label="add"]
+}subgraph cluster_2074_SecuredTokenTransfer {
+label = "SecuredTokenTransfer"
+"2074_transferToken" [label="transferToken"]
+}subgraph cluster_2300_SelfAuthorized {
+label = "SelfAuthorized"
+"2300_requireSelfCall" [label="requireSelfCall"]
+}subgraph cluster_2047_NativeCurrencyPaymentFallback {
+label = "NativeCurrencyPaymentFallback"
+"2047_receive" [label="receive"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"sload(uint256)" 
+"ecrecover(bytes32,uint8,bytes32,bytes32)" 
+"calldatacopy(uint256,uint256,uint256)" 
+"keccak256(bytes)" 
+"revert(uint256,uint256)" 
+"call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)" 
+"mstore(uint256,uint256)" 
+"abi.encodePacked()" 
+"return(uint256,uint256)" 
+"returndatasize()" 
+"calldatasize()" 
+"gas()" 
+"require(bool)" 
+"delegatecall(uint256,uint256,uint256,uint256,uint256,uint256)" 
+"sstore(uint256,uint256)" 
+"abi.encodeWithSelector()" 
+"require(bool,string)" 
+"type()" 
+"returndatacopy(uint256,uint256,uint256)" 
+"mload(uint256)" 
+"chainid()" 
+"abi.encode()" 
+"gasleft()" 
+"963_fallback" -> "calldatasize()"
+"1512_execTransactionFromModuleReturnData" -> "mload(uint256)"
+"911_encodeTransactionData" -> "abi.encode()"
+"2255_sub" -> "require(bool)"
+"963_fallback" -> "returndatasize()"
+"2351_execute" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"2149_simulateAndRevert" -> "mload(uint256)"
+"963_internalSetFallbackHandler" -> "sstore(uint256,uint256)"
+"2255_add" -> "require(bool)"
+"2149_getStorageAt" -> "sload(uint256)"
+"911_execTransaction" -> "gasleft()"
+"1091_setGuard" -> "sstore(uint256,uint256)"
+"1512_getModulesPaginated" -> "mstore(uint256,uint256)"
+"911_checkNSignatures" -> "mload(uint256)"
+"1091_getGuard" -> "sload(uint256)"
+"911_domainSeparator" -> "abi.encode()"
+"2074_transferToken" -> "mload(uint256)"
+"2074_transferToken" -> "gas()"
+"1512_execTransactionFromModule" -> "require(bool,string)"
+"1512_execTransactionFromModuleReturnData" -> "mstore(uint256,uint256)"
+"911_checkSignatures" -> "require(bool,string)"
+"963_fallback" -> "returndatacopy(uint256,uint256,uint256)"
+"963_fallback" -> "sload(uint256)"
+"1512_setupModules" -> "gasleft()"
+"2149_simulateAndRevert" -> "returndatacopy(uint256,uint256,uint256)"
+"911_checkNSignatures" -> "ecrecover(bytes32,uint8,bytes32,bytes32)"
+"1512_execTransactionFromModuleReturnData" -> "returndatacopy(uint256,uint256,uint256)"
+"911_execTransaction" -> "require(bool,string)"
+"911_encodeTransactionData" -> "abi.encodePacked()"
+"2149_simulateAndRevert" -> "returndatasize()"
+"2149_getStorageAt" -> "mstore(uint256,uint256)"
+"2094_signatureSplit" -> "mload(uint256)"
+"2074_transferToken" -> "returndatasize()"
+"963_fallback" -> "mstore(uint256,uint256)"
+"911_encodeTransactionData" -> "keccak256(bytes)"
+"963_fallback" -> "revert(uint256,uint256)"
+"963_fallback" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"911_approveHash" -> "require(bool,string)"
+"2351_execute" -> "mload(uint256)"
+"2351_execute" -> "delegatecall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"911_getTransactionHash" -> "keccak256(bytes)"
+"1091_setGuard" -> "type()"
+"911_checkNSignatures" -> "abi.encodePacked()"
+"2025_setupOwners" -> "require(bool,string)"
+"2025_swapOwner" -> "require(bool,string)"
+"963_fallback" -> "gas()"
+"2025_addOwnerWithThreshold" -> "require(bool,string)"
+"2025_changeThreshold" -> "require(bool,string)"
+"911_checkNSignatures" -> "require(bool,string)"
+"1512_setupModules" -> "require(bool,string)"
+"911_domainSeparator" -> "keccak256(bytes)"
+"1091_setGuard" -> "require(bool,string)"
+"1512_enableModule" -> "require(bool,string)"
+"2074_transferToken" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"2074_transferToken" -> "abi.encodeWithSelector()"
+"1512_disableModule" -> "require(bool,string)"
+"911_checkNSignatures" -> "keccak256(bytes)"
+"1029_supportsInterface" -> "type()"
+"963_fallback" -> "calldatacopy(uint256,uint256,uint256)"
+"911_handlePayment" -> "require(bool,string)"
+"1512_getModulesPaginated" -> "require(bool,string)"
+"2255_mul" -> "require(bool)"
+"963_fallback" -> "return(uint256,uint256)"
+"2149_simulateAndRevert" -> "mstore(uint256,uint256)"
+"911_execTransaction" -> "keccak256(bytes)"
+"2149_simulateAndRevert" -> "revert(uint256,uint256)"
+"2025_removeOwner" -> "require(bool,string)"
+"2149_simulateAndRevert" -> "gas()"
+"2149_simulateAndRevert" -> "delegatecall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"2300_requireSelfCall" -> "require(bool,string)"
+"1512_execTransactionFromModuleReturnData" -> "returndatasize()"
+"911_getChainId" -> "chainid()"
+}"911_handlePayment" -> "2255_mul"
+"911_execTransaction" -> "2255_sub"
+"911_checkNSignatures" -> "2255_add"
+"1091_setGuard" -> "1003_supportsInterface"
+"911_checkNSignatures" -> "2255_mul"
+"911_execTransaction" -> "1003_checkAfterExecution"
+"911_execTransaction" -> "1003_checkTransaction"
+"911_checkNSignatures" -> "2274_isValidSignature"
+"911_handlePayment" -> "2255_add"
+"911_execTransaction" -> "2255_max"
+}
