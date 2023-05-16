@@ -19,4 +19,8 @@ contract SafeHarness is Safe {
     function getModule(address module) public view returns (address) {
         return modules[module];
     }
+
+    function getOwner(address owner) public view returns (address) {
+        return owners[owner];
+    }
 }
