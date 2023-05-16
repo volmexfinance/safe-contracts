@@ -23,4 +23,8 @@ contract SafeHarness is Safe {
     function getOwner(address owner) public view returns (address) {
         return owners[owner];
     }
+
+    function getOwnerCount() public view returns (uint256) {
+        return ownerCount;
+    }
 }
