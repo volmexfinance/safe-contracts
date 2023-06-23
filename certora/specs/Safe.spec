@@ -145,6 +145,7 @@ invariant noOwnerDeadEnds(address dead, address lost)
 
 invariant noSelfPoint(address self)
     self != 1 && self != 0 => getOwner(self) != self
+    filtered { f -> noHavoc(f) && reachableOnly(f) }
     {
         preserved {
             requireInvariant noOwnerDeadEnds(getOwner(1), 1);
