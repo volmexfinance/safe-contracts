@@ -98,16 +98,63 @@ invariant liveOwnerSentinel()
         }
     }
 
-
-/// Two different owners must not point to the same owner
+/// Two different modules must not point to the same module
 invariant uniqueOwnerPrevs(address prev1, address prev2)
     prev1 != prev2 && getOwner(prev1) != 0 => getOwner(prev1) != getOwner(prev2)
     filtered { f -> noHavoc(f) && reachableOnly(f) }
-    {
-        preserved removeOwner(address prevOwner, address owner, uint256 _threshold) with (env e) {
-            require assert_uint256(getOwnerCount() - 1) >= _threshold;
-            require isOwner(owner);
-            require getOwner(prevOwner) == owner;
+    { 
+        preserved {
+            requireInvariant noOwnerDeadEnds(getOwner(prev1), prev1);
+            requireInvariant noOwnerDeadEnds(getOwner(prev2), prev2);
+            requireInvariant uniqueOwnerPrevs(prev1, 1);
+            requireInvariant uniqueOwnerPrevs(prev2, 1);
+            requireInvariant uniqueOwnerPrevs(prev1, getOwner(prev2));
+            requireInvariant uniqueOwnerPrevs(prev2, getOwner(prev1));
+        }
+        preserved swapOwner(address prevOwner, address oldOwner, address newOwner) with (env e) {
+            requireInvariant uniqueOwnerPrevs(oldOwner, prev1);
+            requireInvariant uniqueOwnerPrevs(oldOwner, prev2);
+            requireInvariant noOwnerDeadEnds(newOwner, oldOwner);
+            requireInvariant noOwnerDeadEnds(newOwner, prev1);
+            requireInvariant noOwnerDeadEnds(newOwner, prev2);
         }
     }
 
+/// An owner that points to the zero address must not have another owner pointing to it.
+invariant noOwnerDeadEnds(address dead, address lost)
+    dead != 0 && getOwner(dead) == 0 => getOwner(lost) != dead
+    filtered { f -> noHavoc(f) && reachableOnly(f) }
+    {
+        preserved {
+            requireInvariant liveOwnerSentinel();
+            requireInvariant noOwnerDeadEnds(getOwner(1), 1);
+        }
+        preserved removeOwner(address prevOwner, address owner, uint256 threshold) with (env e) {
+            requireInvariant uniqueOwnerPrevs(prevOwner, lost);
+            requireInvariant uniqueOwnerPrevs(prevOwner, dead);
+            requireInvariant noOwnerDeadEnds(dead, owner);
+            requireInvariant noOwnerDeadEnds(owner, dead);
+        }
+        preserved swapOwner(address prevOwner, address oldOwner, address newOwner) with (env e) {
+            requireInvariant noSelfPoint(oldOwner);
+            requireInvariant noOwnerDeadEnds(oldOwner, prevOwner);
+            requireInvariant noOwnerDeadEnds(dead, oldOwner);
+            requireInvariant uniqueOwnerPrevs(prevOwner, lost);
+        }
+    }
+
+invariant noSelfPoint(address self)
+    self != 1 && self != 0 => getOwner(self) != self
+    {
+        preserved {
+            requireInvariant noOwnerDeadEnds(getOwner(1), 1);
+        }
+        preserved removeOwner(address prevOwner, address owner, uint256 threshold) with (env e) {
+            require getOwner(prevOwner) == owner && getOwner(owner) == prevOwner => owner == 1 || prevOwner == 1; // TODO: this needs to be proven as an invariant (sentinel always in the loop/ never more than 1 loop)
+        }
+        preserved swapOwner(address prevOwner, address oldOwner, address newOwner) with (env e) {
+            requireInvariant noOwnerDeadEnds(self, oldOwner);
+        }
+    }
+
+//invariant sentinelIncluded(address )
