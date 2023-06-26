@@ -90,7 +90,7 @@ invariant noModuleDeadEnds(address dead, address lost)
 /// The owner sentinel must never point to the zero address.
 /// @notice It should either point to itself or some nonzero value
 invariant liveOwnerSentinel()
-    getOwner(1) != 0
+    getOwner(1) != 0 && getOwner(1) != 1
     filtered { f -> noHavoc(f) && reachableOnly(f) }
     {
         preserved removeOwner(address prevOwner, address owner, uint256 _threshold) with (env e) {
@@ -151,11 +151,29 @@ invariant noSelfPoint(address self)
             requireInvariant noOwnerDeadEnds(getOwner(1), 1);
         }
         preserved removeOwner(address prevOwner, address owner, uint256 threshold) with (env e) {
-            require getOwner(prevOwner) == owner && getOwner(owner) == prevOwner => owner == 1 || prevOwner == 1; // TODO: this needs to be proven as an invariant (sentinel always in the loop/ never more than 1 loop)
+            // require getOwner(prevOwner) == owner && getOwner(owner) == prevOwner => owner == 1 || prevOwner == 1; // TODO: this needs to be proven as an invariant (sentinel always in the loop/ never more than 1 loop)
+            requireInvariant sentinelAlwaysInTheLoop(prevOwner, owner);
         }
         preserved swapOwner(address prevOwner, address oldOwner, address newOwner) with (env e) {
             requireInvariant noOwnerDeadEnds(self, oldOwner);
         }
     }
 
-//invariant sentinelIncluded(address )
+
+
+/* 
+    SENTINEL -> OWNER 1
+    OWNER 1 -> OWNER 2
+    OWNER 2 -> OWNER 3
+    OWNER 3 -> SENTINEL    
+*/
+invariant sentinelAlwaysInTheLoop(address prevOwner, address owner)
+    prevOwner != 0 && owner != 0 && getOwner(prevOwner) == owner && getOwner(owner) == prevOwner => owner == 1 || prevOwner == 1
+    filtered { f -> noHavoc(f) && reachableOnly(f) }
+    { 
+        preserved {
+            requireInvariant liveOwnerSentinel();
+            requireInvariant noOwnerDeadEnds(owner, prevOwner);
+            require getOwner(prevOwner) != 0;
+        }
+    }
