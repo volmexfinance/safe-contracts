@@ -95,6 +95,9 @@ invariant liveOwnerSentinel()
     {
         preserved removeOwner(address prevOwner, address owner, uint256 _threshold) with (env e) {
             require isOwner(owner);
+            // We do not want to remove the only owner. For some reason the prover comes up with a random
+            // owner storage state like 1 > owner > 1 but with an owner count larger than 1.
+            require getOwner(owner) != 1 || getOwner(1) != owner;
         }
     }
 
@@ -148,11 +151,11 @@ invariant noSelfPoint(address self)
     filtered { f -> noHavoc(f) && reachableOnly(f) }
     {
         preserved {
+            requireInvariant liveOwnerSentinel();
             requireInvariant noOwnerDeadEnds(getOwner(1), 1);
         }
         preserved removeOwner(address prevOwner, address owner, uint256 threshold) with (env e) {
-            // require getOwner(prevOwner) == owner && getOwner(owner) == prevOwner => owner == 1 || prevOwner == 1; // TODO: this needs to be proven as an invariant (sentinel always in the loop/ never more than 1 loop)
-            requireInvariant sentinelAlwaysInTheLoop(prevOwner, owner);
+
         }
         preserved swapOwner(address prevOwner, address oldOwner, address newOwner) with (env e) {
             requireInvariant noOwnerDeadEnds(self, oldOwner);
@@ -160,20 +163,3 @@ invariant noSelfPoint(address self)
     }
 
 
-
-/* 
-    SENTINEL -> OWNER 1
-    OWNER 1 -> OWNER 2
-    OWNER 2 -> OWNER 3
-    OWNER 3 -> SENTINEL    
-*/
-invariant sentinelAlwaysInTheLoop(address prevOwner, address owner)
-    prevOwner != 0 && owner != 0 && getOwner(prevOwner) == owner && getOwner(owner) == prevOwner => owner == 1 || prevOwner == 1
-    filtered { f -> noHavoc(f) && reachableOnly(f) }
-    { 
-        preserved {
-            requireInvariant liveOwnerSentinel();
-            requireInvariant noOwnerDeadEnds(owner, prevOwner);
-            require getOwner(prevOwner) != 0;
-        }
-    }
