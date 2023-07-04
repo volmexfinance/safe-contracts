@@ -91,6 +91,12 @@ contract CompatibilityFallbackHandler is TokenCallbackHandler, ISignatureValidat
         return array;
     }
 
+    mapping(address => mapping(address => bool)) public whitelists;
+
+    function updateWhitelist(address recipient, bool allowed) public {
+        whitelists[msg.sender][recipient] = allowed;
+    }
+
     /**
      * @dev Performs a delegatecall on a targetContract in the context of self.
      * Internally reverts execution to avoid side effects (making it static). Catches revert and returns encoded result as bytes.

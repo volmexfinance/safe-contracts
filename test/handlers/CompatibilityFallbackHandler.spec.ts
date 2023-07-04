@@ -176,6 +176,15 @@ describe("CompatibilityFallbackHandler", async () => {
         });
     });
 
+    describe("updateWhitelist", async () => {
+        it("allows performing write operations in the fallback handler without any protection", async () => {
+            const { safe, validator } = await setupTests();
+
+            await validator.updateWhitelist(user2.address, true);
+            expect(await validator.whitelists(safe.address, user2.address)).to.be.false;
+        });
+    });
+
     describe("getMessageHash", async () => {
         it("should generate the correct hash", async () => {
             const { safe, validator } = await setupTests();
@@ -199,7 +208,7 @@ describe("CompatibilityFallbackHandler", async () => {
 
     describe("simulate", async () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        it.skip("can be called for any Safe", async () => {});
+        it.skip("can be called for any Safe", async () => { });
 
         it("should revert changes", async () => {
             const { validator, killLib } = await setupTests();
