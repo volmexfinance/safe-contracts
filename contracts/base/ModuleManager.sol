@@ -88,9 +88,9 @@ abstract contract ModuleManager is SelfAuthorized, Executor, GuardManager {
         // Only whitelisted modules are allowed.
         require(msg.sender != SENTINEL_MODULES && modules[msg.sender] != address(0), "GS104");
         // Execute transaction without further confirmations.
-        address guard = getGuard();
+        (address guard, bool checkModuleTxs) = getGuard();
 
-        if (guard != address(0)) {
+        if (checkModuleTxs && guard != address(0)) {
             Guard(guard).checkModuleTransaction(to, value, data, operation, msg.sender);
         }
         success = execute(to, value, data, operation, type(uint256).max);

@@ -170,7 +170,7 @@ contract Safe is
             txHash = keccak256(txHashData);
             checkSignatures(txHash, txHashData, signatures);
         }
-        address guard = getGuard();
+        (address guard, ) = getGuard();
         {
             if (guard != address(0)) {
                 Guard(guard).checkTransaction(
@@ -336,6 +336,19 @@ contract Safe is
         }
     }
 
+    // /**
+    //  * @notice Checks whether the signature provided is valid for the provided data and hash. Reverts otherwise.
+    //  * @dev Since the EIP-1271 does an external call, be mindful of reentrancy attacks.
+    //  * @param dataHash Hash of the data (could be either a message hash or transaction hash)
+    //  * @param data That should be signed (this is passed to an external validator contract)
+    //  * @param signatures Signature data that should be verified.
+    //  *                   Can be packed ECDSA signature ({bytes32 r}{bytes32 s}{uint8 v}), contract signature (EIP-1271) or approved hash.
+    //  * @param requiredSignatures Amount of required valid signatures.
+    //  */
+    // function checkNSignatures(bytes32 dataHash, bytes memory data, bytes memory signatures, uint256 requiredSignatures) public view {
+    //     return checkNSignatures(msg.sender, dataHash, data, signatures, requiredSignatures);
+    // }
+
     /**
      * @notice Marks hash `hashToApprove` as approved.
      * @dev This can be used with a pre-approved hash transaction signature.
@@ -349,25 +362,17 @@ contract Safe is
     }
 
     /**
-     * @notice Returns the ID of the chain the contract is currently deployed on.
-     * @return The ID of the current chain as a uint256.
-     */
-    function getChainId() public view returns (uint256) {
-        uint256 id;
-        // solhint-disable-next-line no-inline-assembly
-        /// @solidity memory-safe-assembly
-        assembly {
-            id := chainid()
-        }
-        return id;
-    }
-
-    /**
      * @dev Returns the domain separator for this contract, as defined in the EIP-712 standard.
      * @return bytes32 The domain separator hash.
      */
     function domainSeparator() public view returns (bytes32) {
-        return keccak256(abi.encode(DOMAIN_SEPARATOR_TYPEHASH, getChainId(), this));
+        uint256 chainId;
+        // solhint-disable-next-line no-inline-assembly
+        /// @solidity memory-safe-assembly
+        assembly {
+            chainId := chainid()
+        }
+        return keccak256(abi.encode(DOMAIN_SEPARATOR_TYPEHASH, chainId, this));
     }
 
     /**
@@ -395,7 +400,7 @@ contract Safe is
         address gasToken,
         address refundReceiver,
         uint256 _nonce
-    ) public view returns (bytes memory) {
+    ) private view returns (bytes memory) {
         bytes32 safeTxHash = keccak256(
             abi.encode(
                 SAFE_TX_TYPEHASH,

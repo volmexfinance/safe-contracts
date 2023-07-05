@@ -52,15 +52,16 @@ abstract contract GuardManager is SelfAuthorized {
      * @notice Set Transaction Guard `guard` for the Safe. Make sure you trust the guard.
      * @param guard The address of the guard to be used or the 0 address to disable the guard
      */
-    function setGuard(address guard) external authorized {
+    function setGuard(address guard, bool shouldCheckModuleTransactions) external authorized {
         if (guard != address(0)) {
             require(Guard(guard).supportsInterface(type(Guard).interfaceId), "GS300");
         }
+
         bytes32 slot = GUARD_STORAGE_SLOT;
         // solhint-disable-next-line no-inline-assembly
         /// @solidity memory-safe-assembly
         assembly {
-            sstore(slot, guard)
+            sstore(slot, or(guard, shl(160, shouldCheckModuleTransactions)))
         }
         emit ChangedGuard(guard);
     }
@@ -72,12 +73,13 @@ abstract contract GuardManager is SelfAuthorized {
      *      with the slot `GUARD_STORAGE_SLOT`
      * @return guard The address of the guard
      */
-    function getGuard() internal view returns (address guard) {
+    function getGuard() internal view returns (address guard, bool shouldCheckModuleTransactions) {
         bytes32 slot = GUARD_STORAGE_SLOT;
         // solhint-disable-next-line no-inline-assembly
         /// @solidity memory-safe-assembly
         assembly {
             guard := sload(slot)
+            shouldCheckModuleTransactions := shr(160, guard)
         }
     }
 }

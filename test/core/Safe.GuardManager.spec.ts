@@ -40,7 +40,7 @@ describe("GuardManager", async () => {
 
             const slot = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("guard_manager.guard.address"));
 
-            await executeContractCallWithSigners(safe, safe, "setGuard", [AddressZero], [user2]);
+            await executeContractCallWithSigners(safe, safe, "setGuard", [AddressZero, false], [user2]);
 
             // Check guard
             await expect(await hre.ethers.provider.getStorageAt(safe.address, slot)).to.be.eq("0x" + "".padStart(64, "0"));
@@ -50,10 +50,12 @@ describe("GuardManager", async () => {
             await expect(await hre.ethers.provider.getStorageAt(safe.address, slot)).to.be.eq("0x" + "".padStart(64, "0"));
 
             // Reverts if it doesn't implement ERC165 Guard Interface
-            await expect(executeContractCallWithSigners(safe, safe, "setGuard", [mock.address], [user2])).to.be.revertedWith("GS013");
+            await expect(executeContractCallWithSigners(safe, safe, "setGuard", [mock.address, false], [user2])).to.be.revertedWith(
+                "GS013",
+            );
 
             await mock.givenCalldataReturnBool(guardEip165Calldata, true);
-            await expect(executeContractCallWithSigners(safe, safe, "setGuard", [mock.address], [user2]))
+            await expect(executeContractCallWithSigners(safe, safe, "setGuard", [mock.address, false], [user2]))
                 .to.emit(safe, "ChangedGuard")
                 .withArgs(mock.address);
 
@@ -76,7 +78,7 @@ describe("GuardManager", async () => {
                 "0x" + mock.address.toLowerCase().slice(2).padStart(64, "0"),
             );
 
-            const safeTx = buildContractCall(safe, "setGuard", [AddressZero], await safe.nonce());
+            const safeTx = buildContractCall(safe, "setGuard", [AddressZero, false], await safe.nonce());
             const signature = await safeApproveHash(user2, safe, safeTx);
             const signatureBytes = buildSignatureBytes([signature]);
 
