@@ -31,11 +31,10 @@ contract RelayerHub  is AccessControl{
      * @notice Adds owner and sets new threshold for safe contract
      * @param signer New owner address.
      * @param threshold New threshold.
-     * @return bool indicating whether transaction failed or not.
      */
-    function addOwner(address signer, uint256 threshold) external returns (bool) {
+    function addOwner(address signer, uint256 threshold) external {
         hasRole(RELAYER_HUB_MANAGER, msg.sender);
-        return safeL2.execTransactionFromModule(address(safeL2), 0, abi.encodeWithSignature("addOwnerWithThreshold(address,uint256)", signer, threshold), Operation.Call);
+        require(safeL2.execTransactionFromModule(address(safeL2), 0, abi.encodeWithSignature("addOwnerWithThreshold(address,uint256)", signer, threshold), Operation.Call), "Call to safe failed");
     }
 
     /**
@@ -43,21 +42,19 @@ contract RelayerHub  is AccessControl{
      * @param signerRemover Owner who is removing owner.
      * @param signerToBeRemoved Oner being removed.
      * @param threshold New threshold.
-     * @return bool indicating whether transaction failed or not.
      */
-    function removeOwner(address signerRemover, address signerToBeRemoved, uint256 threshold) external returns (bool) {
+    function removeOwner(address signerRemover, address signerToBeRemoved, uint256 threshold) external {
         hasRole(RELAYER_HUB_MANAGER, msg.sender);
-        return safeL2.execTransactionFromModule(address(safeL2), 0, abi.encodeWithSignature("removeOwner(address,address,uint256)", signerRemover, signerToBeRemoved, threshold), Operation.Call);
+        require(safeL2.execTransactionFromModule(address(safeL2), 0, abi.encodeWithSignature("removeOwner(address,address,uint256)", signerRemover, signerToBeRemoved, threshold), Operation.Call), "Call to safe failed");
     }
 
     /**
      * @notice Sets new threshold for safe contract
      * @param threshold New threshold.
-     * @return bool indicating whether transaction failed or not.
      */
-    function changeThreshold(uint256 threshold) external returns (bool) {
+    function changeThreshold(uint256 threshold) external {
         hasRole(RELAYER_HUB_MANAGER, msg.sender);
-        return safeL2.execTransactionFromModule(address(safeL2), 0, abi.encodeWithSignature("changeThreshold(uint256)",threshold), Operation.Call);
+        require(safeL2.execTransactionFromModule(address(safeL2), 0, abi.encodeWithSignature("changeThreshold(uint256)",threshold), Operation.Call), "Call to safe failed");
     }
 
     /**
