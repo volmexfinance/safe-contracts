@@ -2,7 +2,7 @@ import "hardhat-deploy";
 import "@nomiclabs/hardhat-ethers";
 import { task } from "hardhat/config";
 
-task("remove-signer", "Adds signer to safe")
+task("remove-signer", "Remove signer from safe")
     .addParam("module", "Address to module")
     .addParam("remover", "Address removing signer")
     .addParam("signer", "Address to add as signer")

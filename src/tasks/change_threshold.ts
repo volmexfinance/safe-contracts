@@ -2,7 +2,7 @@ import "hardhat-deploy";
 import "@nomiclabs/hardhat-ethers";
 import { task } from "hardhat/config";
 
-task("change-threshold", "Adds signer to safe")
+task("change-threshold", "Change threshold of safe")
     .addParam("module", "Address to module")
     .addParam("threshold", "New threshold for safe")
     .setAction(async (taskArgs, hre) => {
